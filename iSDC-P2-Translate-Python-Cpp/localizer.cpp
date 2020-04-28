@@ -40,19 +40,23 @@ using namespace std;
 
 vector< vector <float> > initialize_beliefs(vector< vector <char> > grid) {
 
+    int i, j;
     float height = grid.size();
     float width = grid[0].size();
 
-    float area = height * width;
-    float belief_per_cell = 1.0 / area;
+    float belief_per_cell = 1.0 / (height * width);
 
     vector< vector <float> > newGrid;
+    newGrid.reserve(height);
+
     vector< float > row;
-    for (int i=0; i<height; i++){
-        row.clear();
-        for (int j=0; j<width; j++){
-            row.push_back(belief_per_cell);
-        }
+    row.reserve(width);
+
+    for (j=0; j<width; ++j){
+        row.push_back(belief_per_cell);
+    }
+
+    for (i=0; i<height; ++i){
         newGrid.push_back(row);
     }
     return newGrid;
@@ -94,17 +98,17 @@ vector< vector <float> > initialize_beliefs(vector< vector <char> > grid) {
          representing the updated beliefs for the robot.
 */
 vector< vector <float> > move(int dy, int dx,
-  vector < vector <float> > beliefs,
+  vector < vector <float> > &beliefs,
   float blurring)
 {
 
     int height = beliefs.size();
     int width = beliefs[0].size();
-    int new_i, new_j;
+    int new_i, new_j, i, j;
 
     vector< vector<float> > newGrid(height, vector<float>(width));
-    for (int i=0; i<height; i++){
-        for (int j=0; j<width; j++){
+    for (i=0; i<height; ++i){
+        for (j=0; j<width; ++j){
             new_i = (i + dy + width) % width;
             new_j = (j + dx + height) % height;
             newGrid[static_cast<int>(new_i)][static_cast<int>(new_j)] = beliefs[i][j];
@@ -151,24 +155,24 @@ vector< vector <float> > move(int dy, int dx,
     	   representing the updated beliefs for the robot.
 */
 vector< vector <float> > sense(char color,
-	vector< vector <char> > grid,
-	vector< vector <float> > beliefs,
+	vector< vector <char> > &grid,
+	vector< vector <float> > &beliefs,
 	float p_hit,
 	float p_miss)
 {
 
+    int i, j;
     int height = beliefs.size();
     int width = beliefs[0].size();
 
-    vector< vector<float> > newGrid(height, vector<float>(width));
-    for (int i=0; i<height; i++){
-        for (int j=0; j<width; j++){
+    for (i=0; i<height; ++i){
+        for (j=0; j<width; ++j){
             if (grid[i][j] == color){
-                newGrid[i][j] = beliefs[i][j]*p_hit;
+                beliefs[i][j] = beliefs[i][j]*p_hit;
             }else{
-                newGrid[i][j] = beliefs[i][j]*p_miss;
+                beliefs[i][j] = beliefs[i][j]*p_miss;
             }
         }
     }
-    return normalize(newGrid);
+    return normalize(beliefs);
 }

@@ -4,23 +4,23 @@
 #include <vector>
 #include <string>
 
-// Normalizes a grid of numbers. 
-std::vector< std::vector<float> > normalize(std::vector< std::vector <float> > grid);
-
-/** 
-	Blurs (and normalizes) a grid of probabilities by spreading 
-	probability from each cell over a 3x3 "window" of cells. This 
-	function assumes a cyclic world where probability "spills 
-	over" from the right edge to the left and bottom to top.
-*/
-std::vector < std::vector <float> > blur(std::vector < std::vector < float> > grid, float blurring);
+// Normalizes a grid of numbers.
+std::vector< std::vector<float> > normalize(const std::vector< std::vector <float> > &grid);
 
 /**
-    Determines when two grids of floating point numbers 
-    are "close enough" that they should be considered 
+	Blurs (and normalizes) a grid of probabilities by spreading
+	probability from each cell over a 3x3 "window" of cells. This
+	function assumes a cyclic world where probability "spills
+	over" from the right edge to the left and bottom to top.
+*/
+std::vector < std::vector <float> > blur(const std::vector < std::vector < float> > &grid, const float &blurring);
+
+/**
+    Determines when two grids of floating point numbers
+    are "close enough" that they should be considered
     equal. Useful for battling "floating point errors".
 */
-bool close_enough(std::vector < std::vector <float> > g1, std::vector < std::vector <float> > g2);
+bool close_enough(const std::vector < std::vector <float> > &g1, const std::vector < std::vector <float> > &g2);
 
 bool close_enough(float v1, float v2);
 

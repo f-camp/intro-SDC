@@ -31,11 +31,12 @@ using namespace std;
     	   all probabilities is equal to one.
 */
 
-vector< vector<float> > normalize(vector< vector <float> > grid) {
+vector< vector<float> > normalize(const vector<vector<float>> &grid) {
 
     vector< vector<float> > newGrid(grid.size(), vector<float>(grid[0].size()));
 
     float total = 0;
+    int i, j;
 
     //sum all elements in grid
     for (auto& row: grid){
@@ -44,8 +45,8 @@ vector< vector<float> > normalize(vector< vector <float> > grid) {
         }
     }
 
-    for (auto i=0; i < grid.size(); i++){
-        for (auto j=0; j < grid[0].size(); j++){
+    for (i=0; i < grid.size(); ++i){
+        for (j=0; j < grid[0].size(); ++j){
             newGrid[i][j] = grid[i][j]/total;
         }
     }
@@ -85,7 +86,7 @@ vector< vector<float> > normalize(vector< vector <float> > grid) {
     	   has been blurred.
 */
 
-vector < vector <float> > blur(vector < vector < float> > grid, float blurring) {
+vector<vector<float>> blur(const vector<vector<float>> &grid, const float &blurring) {
 
     int height = grid.size();
     int width = grid[0].size();
@@ -96,19 +97,26 @@ vector < vector <float> > blur(vector < vector < float> > grid, float blurring) 
     float corner_prob = blurring / 12.0;
     float adj_prob = blurring / 6.0;
 
+    int i, j, ii, jj, new_i, new_j, dx, dy;
+    float mult, grid_val;
+
     vector<vector<float>> window  = {{corner_prob, adj_prob, corner_prob},
                                     {adj_prob, center_prob, adj_prob},
                                     {corner_prob, adj_prob, corner_prob}};
 
+    static vector<int> dx_v = {-1, 0, 1};
+    static vector<int> dy_v = {-1, 0, 1};
 
-    for (int i = 0; i < height; i++ ){
-        for (int j = 0; j < width; j++ ){
-            float grid_val = grid[i][j];
-            for (int dx = -1; dx < 2; dx++ ){
-                for (int dy = -1; dy < 2; dy++ ){
-                    float mult = window[dx+1][dy+1];
-                    int new_i = (i + dy + height) % height;
-                    int new_j = (j + dx + width) % width;
+    for (i = 0; i < height; ++i ){
+        for (j = 0; j < width; ++j ){
+            grid_val = grid[i][j];
+            for (ii = 0; ii < 3; ++ii ){
+                dx = dx_v[ii];
+                for (jj = 0; jj < 3; ++jj ){
+                    dy = dy_v[jj];
+                    mult = window[ii][jj];
+                    new_i = (i + dy + height) % height;
+                    new_j = (j + dx + width) % width;
                     newGrid[new_i][new_j]  += mult * grid_val;
                 }
             }
@@ -138,7 +146,7 @@ vector < vector <float> > blur(vector < vector < float> > grid, float blurring) 
     @return - A boolean (True or False) indicating whether
     these grids are (True) or are not (False) equal.
 */
-bool close_enough(vector < vector <float> > g1, vector < vector <float> > g2) {
+bool close_enough(const vector < vector <float> > &g1, const vector < vector <float> > &g2) {
 	int i, j;
 	float v1, v2;
 	if (g1.size() != g2.size()) {
@@ -237,17 +245,21 @@ vector < vector <char> > read_map(string file_name) {
 */
 vector < vector <float> > zeros(int height, int width) {
 	int i, j;
-	vector < vector <float> > newGrid;
-	vector <float> newRow;
 
-	for (i=0; i<height; i++) {
-		newRow.clear();
-		for (j=0; j<width; j++) {
-			newRow.push_back(0.0);
-		}
-		newGrid.push_back(newRow);
-	}
-	return newGrid;
+    vector < vector <float> > newGrid;
+    newGrid.reserve(height);
+
+    vector <float> row;
+    row.reserve(width);
+
+    for (j=0; j<width; ++j){
+        row.push_back(0.0);
+    }
+
+    for (i=0; i<height; ++i){
+        newGrid.push_back(row);
+    }
+    return newGrid;
 }
 
 // int main() {
